@@ -120,7 +120,7 @@ def parse_doska(start, end):
 
         desc = get_descrition(soup)
 
-        Advertisement.objects.create(name=advertisement_name, whatsapp_number=clean_number,
+        Advertisement.objects.create(name=advertisement_name[:100], whatsapp_number=clean_number, price=0,
                                      type=settings.ACTIVE, description=desc, owner=ads_owner)
 
 
@@ -162,8 +162,8 @@ def parse_salexy(start, end):
             ads_owner = User.objects.first()
 
             advertisement_description = str(soup.find('div', id='main').find('div', class_="two-columns-holder") \
-                                            .find('div', class_='product').find('div', class_='info').find('div',
-                                                                                                           class_='description').get_text(
+                .find('div', class_='product').find('div', class_='info').find('div',
+                                                                               class_='description').get_text(
                 strip=True)).strip(' ')
 
             Advertisement.objects.create(name=advertisement_name, price=advertisement_price,

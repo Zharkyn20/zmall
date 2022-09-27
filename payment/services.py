@@ -20,7 +20,7 @@ class PayboxRedirectService:
             "pg_payment_id": str(donate.id),
             "pg_order_id": str(donate.id),
             "pg_salt": settings.PAYBOX_SALT,
-            "pg_description": str(donate.user_name),
+            "pg_description": str(donate.description),
             "pg_language": settings.PAYBOX_LANGUAGE,
             # "pg_success_url": settings.PG_SITE_URL + "donate/" + str(donate.id),
             # "pg_success_url_method": settings.PAYBOX_SUCCESS_URL_METHOD,
