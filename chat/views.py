@@ -9,7 +9,7 @@ from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework import views, generics
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
 from advertisement.models import Advertisement
 from advertisement.swagger_scheme import chat_id
@@ -21,7 +21,8 @@ User = get_user_model()
 
 
 class MessageAPIView(views.APIView):
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     @swagger_auto_schema(method='post',
                          request_body=openapi.Schema(
@@ -37,6 +38,8 @@ class MessageAPIView(views.APIView):
     def post(self, request):
         ads_id = request.data.get('ads_id')
         user = request.user
+        print(user)
+
         user_id = user.pk
 
         chat_id_query = request.data.get('chat_id')

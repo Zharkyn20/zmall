@@ -14,24 +14,24 @@ from user.utils import JWTAuth, get_token_in_headers
 User = get_user_model()
 
 
-class JWTAuthMiddleware:
-    def __init__(self, get_response):
-        self.get_response = get_response
-
-    def __call__(self, request):
-        jwt_auth = JWTAuth()
-        token = get_token_in_headers(request)
-
-        if token:
-            user_id = jwt_auth.get_by_token(token)
-            user = get_object_or_404(User, pk=user_id)
-            request.user = user
-
-        jwt_auth.close()
-
-        response = self.get_response(request)
-
-        return response
+# class JWTAuthMiddleware:
+#     def __init__(self, get_response):
+#         self.get_response = get_response
+#
+#     def __call__(self, request):
+#         jwt_auth = JWTAuth()
+#         token = get_token_in_headers(request)
+#
+#         if token:
+#             user_id = jwt_auth.get_by_token(token)
+#             user = get_object_or_404(User, pk=user_id)
+#             request.user = user
+#
+#         jwt_auth.close()
+#
+#         response = self.get_response(request)
+#
+#         return response
 
 
 class IPMiddleware:

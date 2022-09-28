@@ -3,7 +3,10 @@ import redis
 import jwt
 
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.utils import timezone
+
+User = get_user_model()
 
 
 class JWTAuth:
@@ -23,6 +26,11 @@ class JWTAuth:
         }, self.key, algorithm=self.algorithm)
 
         return token
+
+    def authenticate(self, request):
+        token = get_token_in_headers(request)
+        user_id = self.get_by_token(token)
+        return User.objects.get(user_id)
 
     def get_by_token(self, token_key):
         header_type, token = token_key.split()

@@ -12,7 +12,7 @@ def login_social_user(email) -> dict:
         return {}
 
     login_user = filtered_user_by_email[0]
-    return login_user.get_token()
+    return login_user.tokens()
 
 
 def register_user_by_social(email, first_name, last_name) -> dict:
@@ -34,4 +34,4 @@ def register_user_by_social(email, first_name, last_name) -> dict:
 
     new_user = authenticate(email=email, password=config('SOCIAL_SECRET'))
 
-    return new_user.get_token()
+    return new_user.tokens()

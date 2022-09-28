@@ -71,12 +71,12 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    "config.middleware.JWTAuthMiddleware",
+    # "config.middleware.JWTAuthMiddleware",
     "config.middleware.IPMiddleware",
     "config.middleware.RequestLimitMiddleware",
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    "config.middleware.ViewMiddleware"
+    "config.middleware.ViewMiddleware",
 ]
 
 # LOGGING = {
@@ -286,11 +286,11 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 10,
 
-    # 'DEFAULT_AUTHENTICATION_CLASSES': (
-        # 'rest_framework_simplejwt.authentication.JWTAuthentication',
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
         # 'rest_framework.authentication.BasicAuthentication',
-        # 'rest_framework.authentication.SessionAuthentication',
-    # ),
+        'rest_framework.authentication.SessionAuthentication',
+    ),
     "DATE_INPUT_FORMATS": ["%d.%m.%Y"],
     'DATETIME_FORMAT': "%d.%m.%Y %H:%M:%S",
 }
@@ -306,7 +306,7 @@ SWAGGER_SETTINGS = {
 }
 
 JWT_CONFIG = {
-    'TOKEN_LIFETIME': timedelta(minutes=60),
+    'TOKEN_LIFETIME': timedelta(minutes=600),
     'AUTH_HEADER_TYPES': 'Bearer',
 
     'SIGNING_KEY': SECRET_KEY,
@@ -499,6 +499,14 @@ cloudinary.config(
 )
 
 CORS_ORIGIN_ALLOW_ALL = True
+
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOW_CREDENTIALS = True
+
+CSRF_TRUSTED_ORIGINS = ['http://localhost:5173/']
+
+CORS_REPLACE_HTTPS_REFERER = True
 
 # Redis config
 REDIS_HOST = config('REDIS_HOST')

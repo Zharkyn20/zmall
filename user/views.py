@@ -13,7 +13,6 @@ from rest_framework.decorators import action
 from advertisement.utils import Redis
 from .serializers import UserRegisterSerializer, UserSerializer, UserUpdateSerializer, UserLoginSerializer
 from .tasks import send_ads_for_emails, send_message_to_email
-from .utils import get_token_in_headers, JWTAuth
 
 User = get_user_model()
 
@@ -43,7 +42,7 @@ class UserAPIView(views.APIView):
         serializer = UserUpdateSerializer(context={'request': request})
         user = serializer.update(user, data)
 
-        return Response(user.get_token(), status=status.HTTP_202_ACCEPTED)
+        return Response(user.tokens(), status=status.HTTP_202_ACCEPTED)
 
 
 class RegisterUserView(generics.GenericAPIView):
@@ -166,17 +165,17 @@ class DeleteUserAPIView(views.APIView):
         return Response({'message': 'User success deleted!'}, status=status.HTTP_200_OK)
 
 
-class TokenAPIView(generics.GenericAPIView):
-    serializer_class = UserLoginSerializer
-
-    def post(self, request, *args, **kwargs):
-        data = self.serializer_class(request.data).data
-        login_user = authenticate(email=data.get('email'), password=data.get('password'))
-        return Response(login_user.get_token(), status=status.HTTP_200_OK)
-
-    def delete(self, request, *args, **kwargs):
-        token = get_token_in_headers(request)
-        jwt_auth = JWTAuth()
-        jwt_auth.block_token(token)
-        jwt_auth.close()
-        return Response({"message": "Success logouted!"}, status=status.HTTP_200_OK)
+# class TokenAPIView(generics.GenericAPIView):
+#     serializer_class = UserLoginSerializer
+#
+#     def post(self, request, *args, **kwargs):
+#         data = self.serializer_class(request.data).data
+#         login_user = authenticate(email=data.get('email'), password=data.get('password'))
+#         return Response(login_user.tokens(), status=status.HTTP_200_OK)
+#
+#     def delete(self, request, *args, **kwargs):
+#         token = get_token_in_headers(request)
+#         jwt_auth = JWTAuth()
+#         jwt_auth.block_token(token)
+#         jwt_auth.close()
+#         return Response({"message": "Success logouted!"}, status=status.HTTP_200_OK)

@@ -18,6 +18,8 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenBlacklistView
+
 from .swagger_config import urlpatterns as swg
 from .admin_urls import urlpatterns as admin_url
 
@@ -27,6 +29,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     path(f'{API_HEAD_URL}/social-auth/', include('social_auth.urls'), name='social'),
+    path(f'{API_HEAD_URL}/token/', TokenObtainPairView.as_view(), name='login'),
+    path(f'{API_HEAD_URL}/token/refresh/', TokenRefreshView.as_view(), name='refresh'),
+    path(f'{API_HEAD_URL}/logout/', TokenBlacklistView.as_view(), name='logout'),
 
     path(f'{API_HEAD_URL}/user/', include('user.urls')),
     path(f'{API_HEAD_URL}/site/', include('siteapp.urls')),

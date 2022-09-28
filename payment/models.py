@@ -5,6 +5,7 @@ from advertisement.models import Advertisement
 
 class OrderPayment(models.Model):
     advertisement = models.ForeignKey(Advertisement, on_delete=models.SET_NULL, null=True)
+
     user_name = models.CharField("Имя пользователя", max_length=50)
     description = models.TextField("Описание")
     created_at = models.DateTimeField("Дата создания", auto_now_add=True)
