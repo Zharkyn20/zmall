@@ -29,7 +29,7 @@ def send_ads_for_emails():
     front_host = config('FRONT_HOST')
 
     for advert in adverts:
-        email_body.append(f"{advert.name}-{front_host}{reverse('advertisement', kwargs={'pk': advert.pk})}")
+        email_body.append(f"{advert.name}-{front_host}{reverse('ads', kwargs={'pk': advert.pk})}")
 
     for user in User.objects.all():
         message = {
