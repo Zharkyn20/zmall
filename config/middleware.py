@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.utils import timezone
 from django.http import HttpResponseForbidden
 
@@ -10,6 +11,8 @@ from advertisement.utils import get_client_ip, Redis
 
 from user.utils import JWTAuth, get_token_in_headers
 
+User = get_user_model()
+
 
 class JWTAuthMiddleware:
     def __init__(self, get_response):
@@ -20,7 +23,9 @@ class JWTAuthMiddleware:
         token = get_token_in_headers(request)
 
         if token:
-            jwt_auth.get_by_token(token)
+            user_id = jwt_auth.get_by_token(token)
+            user = get_object_or_404(User, pk=user_id)
+            request.user = user
 
         jwt_auth.close()
 
