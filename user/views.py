@@ -13,6 +13,7 @@ from rest_framework.decorators import action
 from advertisement.utils import Redis
 from .serializers import UserRegisterSerializer, UserSerializer, UserUpdateSerializer, UserLoginSerializer
 from .tasks import send_ads_for_emails, send_message_to_email
+from .utils import get_token_in_headers, JWTAuth
 
 User = get_user_model()
 
@@ -168,7 +169,14 @@ class DeleteUserAPIView(views.APIView):
 class TokenAPIView(generics.GenericAPIView):
     serializer_class = UserLoginSerializer
 
-    def post(self, request):
+    def post(self, request, *args, **kwargs):
         data = self.serializer_class(request.data).data
         login_user = authenticate(email=data.get('email'), password=data.get('password'))
         return Response(login_user.get_token(), status=status.HTTP_200_OK)
+
+    def delete(self, request, *args, **kwargs):
+        token = get_token_in_headers(request)
+        jwt_auth = JWTAuth()
+        jwt_auth.block_token(token)
+        jwt_auth.close()
+        return Response({"message": "Success logouted!"}, status=status.HTTP_200_OK)

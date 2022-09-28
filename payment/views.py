@@ -13,7 +13,7 @@ class OrderPaymentListView(generics.ListAPIView):
     serializer_class = OrderPaymentSerializer
     queryset = OrderPayment.objects.all()
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
-    filterset_fields = ["user_name", "advertisement"]
+    filterset_fields = ["user_name", "advertisement", "is_paid"]
     search_fields = ["user_name", "description"]
     pagination_class = LimitOffsetPagination
 
@@ -33,6 +33,8 @@ class OrderPaymentAPIView(generics.CreateAPIView):
 
 
 class SuccessPaymentAPIView(views.APIView):
-    def get(self, request, pk, *args, **kwargs):
-        OrderPayment.objects.get(pk=pk).update(is_paid=True)
+    def post(self, request, *args, **kwargs):
+        data = request.data
+        order_id = data.get('pg_order_id')
+        OrderPayment.objects.get(pk=order_id).update(is_paid=True)
         return Response({"message": "Success"}, status=status.HTTP_200_OK)
