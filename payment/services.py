@@ -1,6 +1,7 @@
 from hashlib import md5
 from urllib.parse import urlencode
 from django.conf import settings
+from django.urls import reverse
 
 
 class PayboxRedirectService:
@@ -22,7 +23,7 @@ class PayboxRedirectService:
             "pg_salt": settings.PAYBOX_SALT,
             "pg_description": str(donate.description),
             "pg_language": settings.PAYBOX_LANGUAGE,
-            # "pg_success_url": settings.PG_SITE_URL + "donate/" + str(donate.id),
+            # "pg_success_url": f"{settings.PAYBOX_SUCCESS_URL}{reverse('success_payment', args=(donate.id))}",
             # "pg_success_url_method": settings.PAYBOX_SUCCESS_URL_METHOD,
             # "pg_result_url": settings.PAYBOX_RESULT_URL,
             "secret_key": settings.PAYBOX_SECRET_KEY,

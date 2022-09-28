@@ -1,4 +1,4 @@
-from rest_framework import generics
+from rest_framework import generics, views
 from rest_framework.response import Response
 from rest_framework import status, filters
 from django_filters.rest_framework import DjangoFilterBackend
@@ -30,3 +30,9 @@ class OrderPaymentAPIView(generics.CreateAPIView):
         return Response(
             {"redirect_url": paybox_redirect}, status=status.HTTP_201_CREATED, headers=headers
         )
+
+
+class SuccessPaymentAPIView(views.APIView):
+    def get(self, request, pk, *args, **kwargs):
+        OrderPayment.objects.get(pk=pk).update(is_paid=True)
+        return Response({"message": "Success"}, status=status.HTTP_200_OK)

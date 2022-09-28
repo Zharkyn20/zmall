@@ -16,6 +16,7 @@ from datetime import timedelta
 from pathlib import Path
 
 from decouple import config
+from django.urls import reverse
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -590,9 +591,10 @@ PAYBOX_URL = "https://api.paybox.money/payment.php"
 PAYBOX_PROJECT_ID = config("PAYBOX_PROJECT_ID")
 PAYBOX_SECRET_KEY = config("PAYBOX_SECRET_KEY")
 
+CURRENT_URL = config("CURRENT_URL")
 PAYBOX_SALT = config("PAYBOX_SALT")
-PAYBOX_SUCCESS_URL_METHOD = "GET"
+PAYBOX_SUCCESS_URL_METHOD = config("PAYBOX_SUCCESS_URL_METHOD")
 PAYBOX_CURRENCY = "KGS"
 PAYBOX_LANGUAGE = "ru"
-PAYBOX_SUCCESS_URL = config("PAYBOX_SUCCESS_URL")
+PAYBOX_SUCCESS_URL = f"{CURRENT_URL}/success/"
 PAYBOX_RESULT_URL = config("PAYBOX_RESULT_URL")
