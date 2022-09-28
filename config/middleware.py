@@ -8,6 +8,26 @@ from advertisement.models import Advertisement
 from advertisement.views.advertisement_views import AdvertisementRUDView
 from advertisement.utils import get_client_ip, Redis
 
+from user.utils import JWTAuth, get_token_in_headers
+
+
+class JWTAuthMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        jwt_auth = JWTAuth()
+        token = get_token_in_headers(request)
+
+        if token:
+            jwt_auth.get_by_token(token)
+
+        jwt_auth.close()
+
+        response = self.get_response(request)
+
+        return response
+
 
 class IPMiddleware:
     def __init__(self, get_response):
@@ -75,3 +95,4 @@ class ViewMiddleware:
 
         except AttributeError:
             pass
+

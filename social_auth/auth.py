@@ -11,9 +11,8 @@ def login_social_user(email) -> dict:
     if not filtered_user_by_email.exists():
         return {}
 
-    # login_user = authenticate(email=email, password=config('SOCIAL_SECRET'))
     login_user = filtered_user_by_email[0]
-    return login_user.tokens()
+    return login_user.get_token()
 
 
 def register_user_by_social(email, first_name, last_name) -> dict:
@@ -35,4 +34,4 @@ def register_user_by_social(email, first_name, last_name) -> dict:
 
     new_user = authenticate(email=email, password=config('SOCIAL_SECRET'))
 
-    return new_user.tokens()
+    return new_user.get_token()

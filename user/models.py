@@ -3,11 +3,11 @@ from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
 
 from phonenumber_field.modelfields import PhoneNumberField
-from rest_framework_simplejwt.tokens import RefreshToken
 
 from advertisement.models import Advertisement
 
 from .manager import UserManager
+from .utils import JWTAuth
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -32,11 +32,13 @@ class User(AbstractBaseUser, PermissionsMixin):
         'phone_number'
     )
 
-    def tokens(self):
-        refresh = RefreshToken.for_user(self)
+    def get_token(self):
+        jwt_auth = JWTAuth()
+        token = jwt_auth.get_by_user(self)
+        jwt_auth.close()
+
         return {
-            'refresh': str(refresh),
-            'access': str(refresh.access_token)
+            'access': token
         }
 
     def has_module_perms(self, app_label):

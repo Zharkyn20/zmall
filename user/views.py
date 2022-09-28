@@ -1,4 +1,4 @@
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, authenticate
 from django.shortcuts import get_object_or_404
 from django.utils.crypto import get_random_string
 
@@ -11,7 +11,7 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework.decorators import action
 
 from advertisement.utils import Redis
-from .serializers import UserRegisterSerializer, UserSerializer, UserUpdateSerializer
+from .serializers import UserRegisterSerializer, UserSerializer, UserUpdateSerializer, UserLoginSerializer
 from .tasks import send_ads_for_emails, send_message_to_email
 
 User = get_user_model()
@@ -39,10 +39,10 @@ class UserAPIView(views.APIView):
             if id:
                 user = User.objects.get(pk=id)
 
-        serializer = UserUpdateSerializer()
+        serializer = UserUpdateSerializer(context={'request': request})
         user = serializer.update(user, data)
 
-        return Response(user.tokens(), status=status.HTTP_202_ACCEPTED)
+        return Response(user.get_token(), status=status.HTTP_202_ACCEPTED)
 
 
 class RegisterUserView(generics.GenericAPIView):
@@ -163,3 +163,12 @@ class DeleteUserAPIView(views.APIView):
         user = get_object_or_404(User, pk=pk)
         user.delete()
         return Response({'message': 'User success deleted!'}, status=status.HTTP_200_OK)
+
+
+class TokenAPIView(generics.GenericAPIView):
+    serializer_class = UserLoginSerializer
+
+    def post(self, request):
+        data = self.serializer_class(request.data).data
+        login_user = authenticate(email=data.get('email'), password=data.get('password'))
+        return Response(login_user.get_token(), status=status.HTTP_200_OK)
