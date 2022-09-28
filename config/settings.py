@@ -71,6 +71,7 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    "config.middleware.JWTAuthMiddleware",
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     "config.middleware.IPMiddleware",
     "config.middleware.RequestLimitMiddleware",
@@ -286,11 +287,11 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 10,
 
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-        'rest_framework.authentication.BasicAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
-    ),
+    # 'DEFAULT_AUTHENTICATION_CLASSES': (
+        # 'rest_framework_simplejwt.authentication.JWTAuthentication',
+        # 'rest_framework.authentication.BasicAuthentication',
+        # 'rest_framework.authentication.SessionAuthentication',
+    # ),
     "DATE_INPUT_FORMATS": ["%d.%m.%Y"],
     'DATETIME_FORMAT': "%d.%m.%Y %H:%M:%S",
 }
@@ -303,6 +304,14 @@ SWAGGER_SETTINGS = {
             'in': 'header'
         }
     }
+}
+
+JWT_CONFIG = {
+    'TOKEN_LIFETIME': timedelta(minutes=60),
+    'AUTH_HEADER_TYPES': 'Bearer',
+
+    'SIGNING_KEY': SECRET_KEY,
+    'ALGORITHM': 'HS256',
 }
 
 SIMPLE_JWT = {

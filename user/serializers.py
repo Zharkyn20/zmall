@@ -4,16 +4,20 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth import password_validation
 
 from rest_framework import serializers
-from rest_framework_simplejwt.state import token_backend
-from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken
-from rest_framework_simplejwt.tokens import RefreshToken
 
 from advertisement.utils import Redis
 
 from .models import User
 from .tasks import send_activation_mail
+from .utils import JWTAuth, get_token_in_headers
 
 User = get_user_model()
+
+
+class UserLoginSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('email', 'password')
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):
@@ -116,9 +120,11 @@ class UserUpdateSerializer(serializers.Serializer):
             user.phone_number = phone_number
 
         if password:
-            old_token = user.tokens().get('refresah')
-            token = RefreshToken(old_token)
-            token.blacklist()
+            old_token = get_token_in_headers(self.context.get('request'))
+
+            jwt_auth = JWTAuth()
+            jwt_auth.block_token(old_token)
+            jwt_auth.close()
 
             user.set_password(password)
             del validated_data['password']
