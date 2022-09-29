@@ -1,5 +1,3 @@
-import json
-
 from django.conf import settings
 from django.shortcuts import get_object_or_404
 
@@ -29,10 +27,10 @@ from advertisement.serializers import (
 )
 
 from advertisement.models import (
-    Category,
     ChildCategory,
     Advertisement,
-    ComplainingForAds
+    ComplainingForAds,
+    AdsImage
 )
 
 
@@ -90,8 +88,20 @@ class AdvertisementRUDView(generics.RetrieveUpdateDestroyAPIView):
         return [permission() for permission in self.permission_classes]
 
     def update(self, request, *args, **kwargs):
-        # images = request.FILES.getlist('images')
-        # print(images)
+        ads_img_count = AdsImage.objects.filter(advertisement=self.get_object()).count()
+        images = request.FILES.getlist('images')
+
+        if ads_img_count + len(images) > 8:
+            return Response({'images': 'images more then 8!'}, status=status.HTTP_400_BAD_REQUEST)
+
+        for key, file in request.FILES.items():
+            if '_' not in key:
+                continue
+
+            img_id = int(key.split('_'))
+            img = AdsImage.objects.get(pk=img_id)
+            img.image = file
+            img.save()
 
         super(AdvertisementRUDView, self).update(request, *args, **kwargs)
 

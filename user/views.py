@@ -4,45 +4,38 @@ from django.utils.crypto import get_random_string
 
 from rest_framework import generics, status, views
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.decorators import action
 
 from advertisement.utils import Redis
-from .serializers import UserRegisterSerializer, UserSerializer, UserUpdateSerializer, UserLoginSerializer
+
+from .serializers import UserRegisterSerializer, UserSerializer, UserUpdateSerializer, LoginSerializer
 from .tasks import send_ads_for_emails, send_message_to_email
 
 User = get_user_model()
 
 
-class UserAPIView(views.APIView):
-    permission_classes = [IsAuthenticated]
+class LoginAPIView(views.APIView):
+    permission_classes = (AllowAny,)
+    serializer_class = LoginSerializer
 
-    def get(self, request):
-        serializer = UserSerializer(request.user)
+    @swagger_auto_schema(method='post', request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'email': openapi.Schema(type=openapi.TYPE_STRING, description='Your email'),
+            'password': openapi.Schema(type=openapi.TYPE_STRING, description='Your password'),
+        }))
+    @action(methods=['POST'], detail=False)
+    def post(self, request):
+        user = request.data
+
+        serializer = self.serializer_class(data=user)
+        serializer.is_valid(raise_exception=True)
+
         return Response(serializer.data, status=status.HTTP_200_OK)
-
-    @swagger_auto_schema(method='patch', request_body=UserUpdateSerializer)
-    @action(methods=['patch'], detail=False)
-    def patch(self, request):
-        user = request.user
-        data = request.data
-
-        if type(data) != dict:
-            data._mutable = True
-
-        if user.is_superuser:
-            id = request.data.get('id')
-
-            if id:
-                user = User.objects.get(pk=id)
-
-        serializer = UserUpdateSerializer(context={'request': request})
-        user = serializer.update(user, data)
-
-        return Response(user.tokens(), status=status.HTTP_202_ACCEPTED)
 
 
 class RegisterUserView(generics.GenericAPIView):
@@ -50,11 +43,12 @@ class RegisterUserView(generics.GenericAPIView):
 
     def post(self, request):
         data = request.data
-        context = {'request': request}
-        serializer = UserRegisterSerializer(data=data, context=context)
+
+        serializer = UserRegisterSerializer(data=data, context={'request': request})
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response('Пользователь успешно зарегистрирован', status=status.HTTP_201_CREATED)
+
+        return Response({'message': 'Пользователь успешно зарегистрирован!'}, status=status.HTTP_201_CREATED)
 
 
 class UserActivationView(views.APIView):
@@ -164,6 +158,33 @@ class DeleteUserAPIView(views.APIView):
         user.delete()
         return Response({'message': 'User success deleted!'}, status=status.HTTP_200_OK)
 
+
+class UserAPIView(views.APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        serializer = UserSerializer(request.user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @swagger_auto_schema(method='patch', request_body=UserUpdateSerializer)
+    @action(methods=['patch'], detail=False)
+    def patch(self, request):
+        user = request.user
+        data = request.data
+
+        if type(data) != dict:
+            data._mutable = True
+
+        if user.is_superuser:
+            id = request.data.get('id')
+
+            if id:
+                user = User.objects.get(pk=id)
+
+        serializer = UserUpdateSerializer(context={'request': request})
+        user = serializer.update(user, data)
+
+        return Response(user.tokens(), status=status.HTTP_202_ACCEPTED)
 
 # class TokenAPIView(generics.GenericAPIView):
 #     serializer_class = UserLoginSerializer

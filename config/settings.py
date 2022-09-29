@@ -288,9 +288,13 @@ REST_FRAMEWORK = {
 
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+        # 'user.backends.JWTAuthentication',
         # 'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ),
+    'EXCEPTION_HANDLER': 'config.exceptions.core_exception_handler',
+    'NON_FIELD_ERRORS_KEY': 'error',
+
     "DATE_INPUT_FORMATS": ["%d.%m.%Y"],
     'DATETIME_FORMAT': "%d.%m.%Y %H:%M:%S",
 }
@@ -305,13 +309,10 @@ SWAGGER_SETTINGS = {
     }
 }
 
-JWT_CONFIG = {
-    'TOKEN_LIFETIME': timedelta(minutes=600),
-    'AUTH_HEADER_TYPES': 'Bearer',
-
-    'SIGNING_KEY': SECRET_KEY,
-    'ALGORITHM': 'HS256',
-}
+JWT_ALGORITHM = 'HS256'
+JWT_HEADER_PREFIX = 'Bearer'
+JWT_TOKEN_LIFETIME = timedelta(minutes=600)
+JWT_KEY = SECRET_KEY
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=600),
