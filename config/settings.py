@@ -65,6 +65,8 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "config.middleware.IPMiddleware",
+    "config.middleware.RequestLimitMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
@@ -72,8 +74,6 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     # "config.middleware.JWTAuthMiddleware",
-    "config.middleware.IPMiddleware",
-    "config.middleware.RequestLimitMiddleware",
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "config.middleware.ViewMiddleware",

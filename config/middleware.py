@@ -1,9 +1,10 @@
 from django.contrib.auth import get_user_model
 from django.utils import timezone
-from django.http import HttpResponseForbidden
 
 from rest_framework import status
 from rest_framework.generics import get_object_or_404
+from rest_framework.renderers import JSONRenderer
+from rest_framework.response import Response
 
 from advertisement.models import Advertisement
 from advertisement.views.advertisement_views import AdvertisementRUDView
@@ -61,14 +62,20 @@ class RequestLimitMiddleware:
         request_count = conn.get(key)
 
         if not request_count:
-            conn.set(key, 10)
+            conn.set(key, 1)
             conn.expire(key, 10)
         else:
             query_count = int(request_count)
 
             if query_count == 0:
-                return HttpResponseForbidden({'message': 'Request limit exceeded'},
-                                             status.HTTP_509_BANDWIDTH_LIMIT_EXCEEDED)
+                response = Response({'message': 'Request limit exceeded'}, status=429)
+
+                response.accepted_renderer = JSONRenderer()
+                response.accepted_media_type = "application/json"
+                response.renderer_context = {}
+                response.render()
+
+                return response
 
         conn.decr(key)
 
