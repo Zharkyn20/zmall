@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.conf import settings
 from django.utils import timezone
 
@@ -81,7 +83,7 @@ class AdvertisementRetrieveSerializer(serializers.ModelSerializer):
         return True
 
     def get_subscribers(self, obj):
-        date = timezone.now()
+        date = datetime.now(tz=timezone.get_current_timezone())
         instance = AdsSubscriber.objects.filter(advertisement=obj, end_date__gte=date)
         return AdsSubscriberSerializer(instance, many=True).data
 

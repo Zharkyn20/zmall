@@ -1,5 +1,8 @@
+from datetime import datetime
+
 from django.conf import settings
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 
 from django_filters.rest_framework import DjangoFilterBackend
 
@@ -30,7 +33,7 @@ from advertisement.models import (
     ChildCategory,
     Advertisement,
     ComplainingForAds,
-    AdsImage
+    AdsImage, AdsSubscriber
 )
 
 
@@ -150,3 +153,13 @@ class ComplainingForAdsView(generics.CreateAPIView):
     queryset = ComplainingForAds.objects.all()
     serializer_class = ComplainingForAdsSerializer
     permission_classes = [IsAuthenticated]
+
+
+class AdsSubscriberAPIView(generics.ListAPIView):
+    serializer_class = AdvertisementRetrieveSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        date = datetime.now(tz=timezone.get_current_timezone())
+        instance = AdsSubscriber.objects.filter(end_date__gte=date)
+        return Advertisement.objects.filter(subscriber__in=instance)
