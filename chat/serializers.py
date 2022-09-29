@@ -7,6 +7,11 @@ class MessageSerializer(serializers.ModelSerializer):
     chat = serializers.CharField(source='chat.chat_id', read_only=True)
     sender = serializers.CharField(source='sender.pk', read_only=True)
     sender_name = serializers.CharField(source='sender.__str__', read_only=True)
+    type = serializers.SerializerMethodField(read_only=True)
+    file = serializers.FileField(required=False, allow_empty_file=True, allow_null=True)
+
+    def get_type(self, obj):
+        return 'file' if obj.file else 'message'
 
     class Meta:
         model = Message
@@ -17,6 +22,8 @@ class MessageSerializer(serializers.ModelSerializer):
             'message',
             'send_date',
             'is_read',
+            'file',
+            'type',
         )
 
 
@@ -34,7 +41,10 @@ class ChatListSerializer(serializers.ModelSerializer):
         instance = Message.objects.filter(chat=obj).last()
         serializer = MessageSerializer(instance)
         data = serializer.data
-        del data['chat']
+
+        if data.get('chat'):
+            del data['chat']
+
         return data
 
     class Meta:

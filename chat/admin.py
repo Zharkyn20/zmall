@@ -22,6 +22,6 @@ class MessageAdmin(admin.ModelAdmin):
         """
         Метод для получение картинки в виде отрендеренного html
         """
-        return obj.message[:150]
+        return obj.message[:150] if obj.message else ''
 
     get_message.short_description = 'Сообщение'

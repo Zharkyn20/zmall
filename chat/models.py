@@ -1,6 +1,8 @@
 from django.conf import settings
 from django.db import models
 
+from cloudinary.models import CloudinaryField
+
 from advertisement.models import Advertisement
 
 
@@ -18,9 +20,10 @@ class Chat(models.Model):
 
 
 class Message(models.Model):
-    sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
-    chat = models.ForeignKey(Chat, on_delete=models.SET_NULL, null=True, related_name='messages')
-    message = models.TextField()
+    sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    chat = models.ForeignKey(Chat, on_delete=models.CASCADE, related_name='messages')
+    message = models.TextField(default='', blank=True)
+    file = CloudinaryField('Файл', null=True, blank=True)
     send_date = models.DateTimeField(auto_now_add=True)
     is_read = models.BooleanField(default=False)
 

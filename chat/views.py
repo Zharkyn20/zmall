@@ -21,8 +21,7 @@ User = get_user_model()
 
 
 class MessageAPIView(views.APIView):
-    # permission_classes = [IsAuthenticated]
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
     @swagger_auto_schema(method='post',
                          request_body=openapi.Schema(
@@ -32,13 +31,14 @@ class MessageAPIView(views.APIView):
                                  'ads_id': openapi.Schema(type=openapi.TYPE_INTEGER),
                                  'chat_id': openapi.Schema(type=openapi.TYPE_STRING),
                                  'message': openapi.Schema(type=openapi.TYPE_STRING),
+                                 'file': openapi.Schema(type=openapi.TYPE_FILE)
                              },
                              operation_description='Send message'))
     @action(['post'], detail=False)
     def post(self, request):
         ads_id = request.data.get('ads_id')
+        file = request.FILES.get('file')
         user = request.user
-        print(user)
 
         user_id = user.pk
 
@@ -57,7 +57,7 @@ class MessageAPIView(views.APIView):
         message = request.data.get('message')
 
         chat = Chat.objects.get_or_create(chat_id=chat_id, advertisement_id=ads_id, sender_id=user_id)[0]
-        instance = Message.objects.create(sender=user, chat=chat, message=message)
+        instance = Message.objects.create(sender=user, chat=chat, message=message, file=file)
 
         serializer = MessageSerializer(instance)
         data = serializer.data
