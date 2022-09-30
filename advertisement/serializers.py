@@ -61,6 +61,7 @@ class AdsSubscriberSerializer(serializers.ModelSerializer):
 class AdvertisementRetrieveSerializer(serializers.ModelSerializer):
     views_count = serializers.SerializerMethodField()
     phone_view_count = serializers.SerializerMethodField()
+    phone_numbers = serializers.ListField(required=False, allow_empty=True, allow_null=True)
     city = serializers.CharField(source='city.name', read_only=True)
     child_category = serializers.CharField(source='child_category.name', read_only=True)
     images = AdsImageListSerializer(many=True, read_only=True)

@@ -1,3 +1,4 @@
+import json
 from datetime import datetime
 
 from django.conf import settings
@@ -86,14 +87,21 @@ class AdvertisementRUDView(generics.RetrieveUpdateDestroyAPIView):
         return [permission() for permission in self.permission_classes]
 
     def update(self, request, *args, **kwargs):
-        del_images = request.data.get('del_images')
-        AdsImage.objects.in_bulk(del_images).delete()
+        del_images = json.loads(request.data.get('del_images'))
+        advertisement = self.get_object()
 
-        ads_img_count = AdsImage.objects.filter(advertisement=self.get_object()).count()
+        for pk in del_images:
+            img = AdsImage.objects.get(pk=pk)
+            img.delete()
+
+        ads_img_count = AdsImage.objects.filter(advertisement=advertisement).count()
         images = request.FILES.getlist('images')
 
         if ads_img_count + len(images) > 8:
             return Response({'images': 'images more then 8!'}, status=status.HTTP_400_BAD_REQUEST)
+
+        for image in images:
+            AdsImage.objects.create(advertisement=advertisement, image=image)
 
         for key, file in request.FILES.items():
             if '_' not in key:
