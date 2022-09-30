@@ -221,10 +221,14 @@ class ChildCategorySerializer(serializers.ModelSerializer):
 
 class CategorySerializer(serializers.ModelSerializer):
     icon = serializers.ImageField(required=False)
+    ads_count = serializers.SerializerMethodField(read_only=True)
+
+    def get_ads_count(self, obj):
+        return Advertisement.objects.filter(child_category__category=obj, type=settings.ACTIVE).count()
 
     class Meta:
         model = Category
-        fields = '__all__'
+        fields = ('id', 'name', 'icon', 'ads_count')
 
 
 class CategoryDetailSerializer(serializers.ModelSerializer):
