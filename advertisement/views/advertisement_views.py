@@ -167,5 +167,5 @@ class AdsSubscriberAPIView(generics.ListAPIView):
 
     def get_queryset(self):
         date = datetime.now(tz=timezone.get_current_timezone())
-        instance = AdsSubscriber.objects.filter(end_date__gte=date)
+        instance = AdsSubscriber.objects.filter(end_date__gte=date, is_paid=True)
         return Advertisement.objects.filter(subscriber__in=instance)
