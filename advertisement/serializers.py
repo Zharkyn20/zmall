@@ -87,7 +87,7 @@ class AdvertisementRetrieveSerializer(serializers.ModelSerializer):
 
     def get_subscribers(self, obj):
         date = datetime.now(tz=timezone.get_current_timezone())
-        instance = AdsSubscriber.objects.filter(advertisement=obj, end_date__gte=date)
+        instance = AdsSubscriber.objects.filter(advertisement=obj, end_date__gte=date, is_paid=True)
         return AdsSubscriberSerializer(instance, many=True).data
 
     def get_comments(self, obj):
