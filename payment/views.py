@@ -1,16 +1,12 @@
-import json
-
 from rest_framework import generics, views
 from rest_framework.response import Response
 from rest_framework import status, filters
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.permissions import IsAdminUser, AllowAny
 
-from advertisement.utils import Redis
 from .serializers import AdsSubscriberSerializer, SubscriptionSerializer
 from .services import PayboxRedirectService
 from .models import AdsSubscriber, Subscription
-from .tasks import check_payment
 
 
 class AdsSubscriberListView(generics.ListAPIView):
