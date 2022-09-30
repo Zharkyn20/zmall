@@ -40,6 +40,7 @@ from payment.models import AdsSubscriber
 
 
 class AdvertisementListView(generics.ListAPIView):
+    queryset = Advertisement.objects.filter(type=settings.ACTIVE)
     serializer_class = AdvertisementRetrieveSerializer
     permission_classes = [AllowAny]
     filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter, AdvertisementCustomFilterBackend)
@@ -51,14 +52,6 @@ class AdvertisementListView(generics.ListAPIView):
     @action(['get'], detail=False)
     def get(self, request, *args, **kwargs):
         return super(AdvertisementListView, self).get(request)
-
-    def get_queryset(self):
-        queryset = Advertisement.objects.filter(type=settings.ACTIVE)
-
-        if self.request.user.is_superuser:
-            queryset = Advertisement.objects.all()
-
-        return queryset
 
 
 class AdvertisementCreateView(generics.CreateAPIView):
