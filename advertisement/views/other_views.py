@@ -4,14 +4,12 @@ from advertisement.serializers import (
     CitySerializer,
     CategorySerializer,
     ChildCategorySerializer,
-    AdsSubscriberSerializer,
     CategoryDetailSerializer
 )
 
 from advertisement.models import (
     Category,
     ChildCategory,
-    AdsSubscriber,
     City,
 )
 

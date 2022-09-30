@@ -33,8 +33,10 @@ from advertisement.models import (
     ChildCategory,
     Advertisement,
     ComplainingForAds,
-    AdsImage, AdsSubscriber
+    AdsImage
 )
+
+from payment.models import AdsSubscriber
 
 
 class AdvertisementListView(generics.ListAPIView):
@@ -91,6 +93,9 @@ class AdvertisementRUDView(generics.RetrieveUpdateDestroyAPIView):
         return [permission() for permission in self.permission_classes]
 
     def update(self, request, *args, **kwargs):
+        del_images = request.data.get('del_images')
+        AdsImage.objects.in_bulk(del_images).delete()
+
         ads_img_count = AdsImage.objects.filter(advertisement=self.get_object()).count()
         images = request.FILES.getlist('images')
 

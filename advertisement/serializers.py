@@ -10,13 +10,14 @@ from .models import (
     Category,
     ChildCategory,
     Advertisement,
-    AdsSubscriber,
     AdsImage,
     City,
     AdsComment,
     ComplainingForAds,
     Favorite
 )
+from payment.models import AdsSubscriber
+
 from .utils import Redis
 
 

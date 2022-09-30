@@ -90,37 +90,6 @@ class Advertisement(models.Model):
         ordering = ['id']
 
 
-class Subscription(models.Model):
-    name = models.CharField('Название', max_length=100)
-    icon = CloudinaryField('Иконка')
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        verbose_name = 'Подписка'
-        verbose_name_plural = 'Подписки'
-        ordering = ['id']
-
-
-class AdsSubscriber(models.Model):
-    advertisement = models.ForeignKey(Advertisement, on_delete=models.SET_NULL, verbose_name='Объявление', blank=True,
-                                      null=True, related_name='subscriber')
-    subscription = models.ForeignKey(Subscription, on_delete=models.SET_NULL, verbose_name='Подписка', blank=True,
-                                     null=True)
-    start_date = models.DateTimeField('Дата начала')
-    end_date = models.DateTimeField('Дата окончания')
-    created_at = models.DateTimeField('Дата создания', auto_now=True)
-
-    def __str__(self):
-        return self.advertisement.name
-
-    class Meta:
-        verbose_name = 'Подписка объявления'
-        verbose_name_plural = 'Подписки объявлений'
-        ordering = ['id']
-
-
 class AdsImage(models.Model):
     image = CloudinaryField('Фотография')
     advertisement = models.ForeignKey(Advertisement, on_delete=models.CASCADE, verbose_name='Объявление',
@@ -139,9 +108,9 @@ class AdsImage(models.Model):
 
 class Favorite(models.Model):
     advertisement = models.ForeignKey(Advertisement, verbose_name='Объявление', on_delete=models.CASCADE,
-                                       related_name='favorites')
+                                      related_name='favorites')
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
-                                verbose_name='Пользователь', related_name='favorites')
+                             verbose_name='Пользователь', related_name='favorites')
 
     def __str__(self):
         return f'{self.user.email}-{self.advertisement}'

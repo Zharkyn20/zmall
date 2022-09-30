@@ -62,7 +62,7 @@ class RequestLimitMiddleware:
         request_count = conn.get(key)
 
         if not request_count:
-            conn.set(key, 1)
+            conn.set(key, 100)
             conn.expire(key, 10)
         else:
             query_count = int(request_count)

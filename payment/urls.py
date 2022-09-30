@@ -1,9 +1,9 @@
 from django.urls import path
 
-from .views import OrderPaymentListView, OrderPaymentAPIView, SuccessPaymentAPIView
+from .views import AdsSubscriberListView, AdsSubscriberAPIView, SuccessPaymentAPIView
 
 urlpatterns = [
-    path("list/", OrderPaymentListView.as_view(), name='payment_list'),
-    path("payment/", OrderPaymentAPIView.as_view(), name='payment_create'),
+    path("list/", AdsSubscriberListView.as_view(), name='payment_list'),
+    path("payment/", AdsSubscriberAPIView.as_view(), name='payment_create'),
     path("success/", SuccessPaymentAPIView.as_view(), name='success_payment'),
 ]

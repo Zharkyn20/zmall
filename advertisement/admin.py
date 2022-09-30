@@ -5,10 +5,8 @@ from .models import (
     Category,
     ChildCategory,
     Advertisement,
-    AdsSubscriber,
     AdsImage,
     City,
-    Subscription,
     AdsComment,
     ComplainingForAds,
     Favorite
@@ -71,31 +69,6 @@ class ChildCategoryAdmin(admin.ModelAdmin):
     list_display_links = ('id', 'name')
     search_fields = ('name',)
     list_filter = ('category',)
-
-
-@admin.register(Subscription)
-class SubscriptionAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'get_icon')
-    list_display_links = ('id', 'name')
-    search_fields = ('name',)
-    readonly_fields = ('get_icon',)
-
-    def get_icon(self, obj):
-        """
-        Метод для получение картинки в виде отрендеренного html
-        """
-        return mark_safe(f'<img src={obj.icon.url} width="130" height="180">') if obj.icon else '-'
-
-    get_icon.short_description = 'Иконка'
-
-
-@admin.register(AdsSubscriber)
-class AdsSubscriberAdmin(admin.ModelAdmin):
-    list_display = ('id', 'advertisement', 'subscription', 'start_date', 'end_date', 'created_at')
-    list_display_links = ('id', 'advertisement', 'subscription')
-    search_fields = ('advertisement', 'subscription')
-    list_filter = ('advertisement', 'subscription', 'start_date', 'end_date', 'created_at')
-
 
 @admin.register(City)
 class CityAdmin(admin.ModelAdmin):
