@@ -12,7 +12,7 @@ from rest_framework.decorators import action
 
 from advertisement.utils import Redis
 
-from .serializers import UserRegisterSerializer, UserSerializer, UserUpdateSerializer, LoginSerializer, UserRetrieveUpdateSerializer
+from .serializers import UserRegisterSerializer, UserSerializer, LoginSerializer, UserRetrieveUpdateSerializer
 from .tasks import send_ads_for_emails, send_message_to_email
 
 User = get_user_model()
@@ -159,32 +159,6 @@ class DeleteUserAPIView(views.APIView):
         return Response({'message': 'User success deleted!'}, status=status.HTTP_200_OK)
 
 
-# class UserAPIView(generics.APIView):
-#     permission_classes = [IsAuthenticated]
-#
-#     def get(self, request):
-#         serializer = UserSerializer(request.user)
-#         return Response(serializer.data, status=status.HTTP_200_OK)
-#
-#     @swagger_auto_schema(method='patch', request_body=UserUpdateSerializer)
-#     @action(methods=['patch'], detail=False)
-#     def patch(self, request):
-#         user = request.user
-#         data = request.data
-#
-#         if type(data) != dict:
-#             data._mutable = True
-#
-#         if user.is_superuser:
-#             id = request.data.get('id')
-#
-#             if id:
-#                 user = User.objects.get(pk=id)
-#
-#         serializer = UserUpdateSerializer(context={'request': request})
-#         user = serializer.update(user, data)
-#
-#         return Response(user.tokens(), status=status.HTTP_202_ACCEPTED)
 class UserRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = UserRetrieveUpdateSerializer
@@ -209,17 +183,3 @@ class UserRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView):
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-# class TokenAPIView(generics.GenericAPIView):
-#     serializer_class = UserLoginSerializer
-#
-#     def post(self, request, *args, **kwargs):
-#         data = self.serializer_class(request.data).data
-#         login_user = authenticate(email=data.get('email'), password=data.get('password'))
-#         return Response(login_user.tokens(), status=status.HTTP_200_OK)
-#
-#     def delete(self, request, *args, **kwargs):
-#         token = get_token_in_headers(request)
-#         jwt_auth = JWTAuth()
-#         jwt_auth.block_token(token)
-#         jwt_auth.close()
-#         return Response({"message": "Success logouted!"}, status=status.HTTP_200_OK)
