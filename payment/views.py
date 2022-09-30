@@ -1,13 +1,16 @@
+import json
+
 from rest_framework import generics, views
 from rest_framework.response import Response
 from rest_framework import status, filters
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import IsAdminUser
 
+from advertisement.utils import Redis
 from .serializers import AdsSubscriberSerializer
 from .services import PayboxRedirectService
 from .models import AdsSubscriber
+from .tasks import check_payment
 
 
 class AdsSubscriberListView(generics.ListAPIView):
@@ -27,17 +30,25 @@ class AdsSubscriberAPIView(generics.CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         ads_subsriber = serializer.save()
+
         headers = self.get_success_headers(serializer.data)
-        paybox_redirect = PayboxRedirectService.generate_paybox_url(ads_subsriber)
+        redirect_url = PayboxRedirectService.generate_paybox_url(ads_subsriber)
+
+        # redis = Redis()
+        # conn = redis.conn
+        # conn.set(f'payment-{ads_subsriber.pk}', json.dumps(paybox_response))
+
+        # redis.close()
 
         return Response(
-            {"redirect_url": paybox_redirect.get('url')}, status=status.HTTP_201_CREATED, headers=headers
+            {"redirect_url": redirect_url}, status=status.HTTP_201_CREATED, headers=headers
         )
 
-import requests
 
 class SuccessPaymentAPIView(views.APIView):
     def post(self, request, *args, **kwargs):
-        url = 'https://api.paybox.money/get_status2.php'
-        response = request.post(url)
+        data = request.data
+        order_id = data.get('pg_order_id')
+        AdsSubscriber.objects.filter(pk=order_id).update(is_paid=True)
+
         return Response({"message": "Success"}, status=status.HTTP_200_OK)
