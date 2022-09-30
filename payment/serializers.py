@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import AdsSubscriber
+from .models import AdsSubscriber, Subscription
 
 
 class AdsSubscriberSerializer(serializers.ModelSerializer):
@@ -19,3 +19,9 @@ class AdsSubscriberSerializer(serializers.ModelSerializer):
     class Meta:
         model = AdsSubscriber
         fields = ("advertisement", "subscription", "start_date", "end_date", "created_at", 'pg_amount', 'is_paid')
+
+
+class SubscriptionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Subscription
+        fields = ('id', 'name', 'price', 'icon')

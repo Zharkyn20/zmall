@@ -4,12 +4,12 @@ from rest_framework import generics, views
 from rest_framework.response import Response
 from rest_framework import status, filters
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.permissions import IsAdminUser
+from rest_framework.permissions import IsAdminUser, AllowAny
 
 from advertisement.utils import Redis
-from .serializers import AdsSubscriberSerializer
+from .serializers import AdsSubscriberSerializer, SubscriptionSerializer
 from .services import PayboxRedirectService
-from .models import AdsSubscriber
+from .models import AdsSubscriber, Subscription
 from .tasks import check_payment
 
 
@@ -52,3 +52,9 @@ class SuccessPaymentAPIView(views.APIView):
         AdsSubscriber.objects.filter(pk=order_id).update(is_paid=True)
 
         return Response({"message": "Success"}, status=status.HTTP_200_OK)
+
+
+class SubscriptionListAPIView(generics.ListAPIView):
+    queryset = Subscription.objects.all()
+    serializer_class = SubscriptionSerializer
+    permission_classes = [AllowAny]
