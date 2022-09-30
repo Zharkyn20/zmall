@@ -1,3 +1,4 @@
+import json
 from datetime import datetime
 
 from django.conf import settings
@@ -61,7 +62,7 @@ class AdsSubscriberSerializer(serializers.ModelSerializer):
 class AdvertisementRetrieveSerializer(serializers.ModelSerializer):
     views_count = serializers.SerializerMethodField()
     phone_view_count = serializers.SerializerMethodField()
-    phone_numbers = serializers.ListField(required=False, allow_empty=True, allow_null=True)
+    phone_numbers = serializers.ListField(required=False, allow_null=True)
     city = serializers.CharField(source='city.name', read_only=True)
     child_category = serializers.CharField(source='child_category.name', read_only=True)
     images = AdsImageListSerializer(many=True, read_only=True)
@@ -106,6 +107,20 @@ class AdvertisementRetrieveSerializer(serializers.ModelSerializer):
         redis.close()
 
         return data['phone_views_count']
+
+    def to_representation(self, instance):
+        data = super(AdvertisementRetrieveSerializer, self).to_representation(instance)
+        phone_numbers = data.get('phone_numbers')
+
+        if phone_numbers:
+            try:
+                phone_numbers = json.loads(phone_numbers[0])
+            except:
+                pass
+
+        data['phone_numbers'] = phone_numbers
+
+        return data
 
     class Meta:
         model = Advertisement
